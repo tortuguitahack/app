@@ -1,20 +1,18 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
 
 from models.category import Category, CategoryCreate, CategoryUpdate
 
 router = APIRouter(prefix="/api/categories", tags=["categories"])
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Database will be injected via dependency
+async def get_database():
+    from server import db
+    return db
 
 
 @router.get("/", response_model=List[Category])
-async def get_categories():
+async def get_categories(db = Depends(get_database)):
     """Get all categories with product counts"""
     try:
         # Get categories
@@ -35,7 +33,7 @@ async def get_categories():
 
 
 @router.post("/", response_model=Category)
-async def create_category(category_data: CategoryCreate):
+async def create_category(category_data: CategoryCreate, db = Depends(get_database)):
     """Create new category"""
     try:
         # Check if category already exists
@@ -59,7 +57,7 @@ async def create_category(category_data: CategoryCreate):
 
 
 @router.put("/{category_id}", response_model=Category)
-async def update_category(category_id: str, category_data: CategoryUpdate):
+async def update_category(category_id: str, category_data: CategoryUpdate, db = Depends(get_database)):
     """Update category"""
     try:
         # Check if category exists
