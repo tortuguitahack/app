@@ -1,17 +1,15 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime
-import os
 
 from models.product import Product, ProductCreate, ProductUpdate
 
 router = APIRouter(prefix="/api/products", tags=["products"])
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Database will be injected via dependency
+async def get_database():
+    from server import db
+    return db
 
 
 @router.get("/", response_model=List[Product])
@@ -19,7 +17,8 @@ async def get_products(
     category: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     featured: Optional[bool] = Query(None),
-    inStock: Optional[bool] = Query(None)
+    inStock: Optional[bool] = Query(None),
+    db = Depends(get_database)
 ):
     """Get all products with optional filtering"""
     filter_query = {}
@@ -47,7 +46,7 @@ async def get_products(
 
 
 @router.get("/{product_id}", response_model=Product)
-async def get_product(product_id: str):
+async def get_product(product_id: str, db = Depends(get_database)):
     """Get single product by ID"""
     try:
         product = await db.products.find_one({"id": product_id})
@@ -61,7 +60,7 @@ async def get_product(product_id: str):
 
 
 @router.post("/", response_model=Product)
-async def create_product(product_data: ProductCreate):
+async def create_product(product_data: ProductCreate, db = Depends(get_database)):
     """Create new product"""
     try:
         product = Product(**product_data.dict())
@@ -73,7 +72,7 @@ async def create_product(product_data: ProductCreate):
 
 
 @router.put("/{product_id}", response_model=Product)
-async def update_product(product_id: str, product_data: ProductUpdate):
+async def update_product(product_id: str, product_data: ProductUpdate, db = Depends(get_database)):
     """Update product"""
     try:
         # Check if product exists
@@ -101,7 +100,7 @@ async def update_product(product_id: str, product_data: ProductUpdate):
 
 
 @router.delete("/{product_id}")
-async def delete_product(product_id: str):
+async def delete_product(product_id: str, db = Depends(get_database)):
     """Delete product"""
     try:
         result = await db.products.delete_one({"id": product_id})
