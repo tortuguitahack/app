@@ -1,34 +1,387 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Aesop Luxury Minimalist Design System */
+
+/* Import Google Fonts as fallback for Suisse */
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&display=swap');
+
+/* Foundation Colors - Warm Neutral Palette */
+:root {
+  /* Primary Backgrounds - Warm foundation */
+  --bg-primary: #fffef2; /* Warm white (main background) */
+  --bg-secondary: #f6f5e8; /* Light warm beige (sections) */
+  --bg-subtle: #ebeade; /* Very light warm gray (borders) */
+  
+  /* Text Hierarchy - Rich contrast */
+  --text-primary: #333333; /* Main content and headings */
+  --text-secondary: #666666; /* Supporting text and descriptions */
+  --text-light: #bcbbb4; /* Captions and meta information */
+  --text-meta: #4a4a4a; /* Secondary meta data */
+  
+  /* Interactive States - Minimal emphasis */
+  --interactive-base: #333333; /* Button and link base color */
+  --interactive-hover: #000000; /* Hover and active states */
+  --focus-outline: #252525; /* Focus outline color */
+  
+  /* Borders & Separators */
+  --border-light: #bcbbb4; /* Subtle separators */
+  --border-medium: #cccccc; /* Standard borders */
+  --border-subtle: rgba(51,51,51,0.2); /* Form elements */
+  
+  /* Status Colors - Restrained approach */
+  --status-error: #ba3e2b; /* Error states (only when necessary) */
+  --status-success: #4a4a4a; /* Success (muted, not green) */
+  --status-warning: #666666; /* Warning (subtle gray) */
+  --status-info: #333333; /* Information states */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+body {
+  font-family: 'Crimson Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
 }
 
-.App-link {
-    color: #61dafb;
+/* Typography System - Exceptional Hierarchy */
+.hero-large {
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1.33;
+  color: var(--text-primary);
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.hero-medium {
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.33;
+  color: var(--text-primary);
+}
+
+.heading-1 {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.heading-2 {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.heading-3 {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.body-large {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.body-regular {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.body-small {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.button-text {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.navigation-text {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+/* Buttons - Sharp, Minimal Design */
+.btn-primary {
+  background: transparent;
+  color: var(--interactive-base);
+  border: 1px solid var(--interactive-base);
+  border-radius: 0px; /* Sharp edges - no rounding */
+  padding: 19px 23px;
+  min-width: 210px;
+  height: 60px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(.645,.045,.355,1);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  background: var(--interactive-base);
+  color: var(--bg-primary);
+}
+
+.btn-primary:active {
+  background: var(--interactive-hover);
+  color: var(--bg-primary);
+}
+
+.btn-secondary {
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--interactive-base);
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 16px;
+  width: 0;
+  height: 1px;
+  background: var(--interactive-base);
+  transition: width 0.5s ease-in-out;
+}
+
+.btn-secondary:hover:after {
+  width: calc(100% - 32px);
+}
+
+/* Layout System - Generous Spacing */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
+/* Spacing System - Generous White Space */
+.space-xs { margin: 8px; }
+.space-sm { margin: 16px; }
+.space-md { margin: 24px; }
+.space-lg { margin: 32px; }
+.space-xl { margin: 48px; }
+.space-xxl { margin: 80px; }
+
+.pad-xs { padding: 8px; }
+.pad-sm { padding: 16px; }
+.pad-md { padding: 24px; }
+.pad-lg { padding: 32px; }
+.pad-xl { padding: 48px; }
+.pad-xxl { padding: 80px; }
+
+.section-padding {
+  padding: 120px 0;
+}
+
+.section-padding-small {
+  padding: 80px 0;
+}
+
+@media (max-width: 1024px) {
+  .section-padding {
+    padding: 80px 0;
+  }
+  .section-padding-small {
+    padding: 60px 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-padding {
+    padding: 60px 0;
+  }
+  .section-padding-small {
+    padding: 40px 0;
+  }
+}
+
+/* Navigation - Clean & Minimal */
+.navigation-header {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navigation-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navigation-logo {
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.navigation-menu {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.navigation-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 12px 0;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.navigation-link:after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--text-primary);
+  transition: width 0.5s ease-in-out;
+}
+
+.navigation-link:hover:after,
+.navigation-link.active:after {
+  width: 100%;
+}
+
+.navigation-utilities {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Grid Layouts */
+.grid-two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.grid-product-showcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+  margin: 80px 0;
+}
+
+@media (max-width: 1024px) {
+  .grid-two-column {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid-product-showcase {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Animations & Interactions */
+.transition-smooth {
+  transition: all 0.2s cubic-bezier(.645,.045,.355,1);
+}
+
+.transition-slow {
+  transition: all 0.5s ease-in-out;
+}
+
+.hover-lift {
+  transition: transform 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Focus States */
+.focus-visible {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 4px;
+}
+
+/* Age Verification Modal */
+.age-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.age-modal-content {
+  background: var(--bg-primary);
+  padding: 48px;
+  max-width: 500px;
+  text-align: center;
+  border-radius: 0px;
+}
+
+/* Remove default focus outlines and use custom ones */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Ensure no center alignment is applied globally */
+.App {
+  text-align: left;
 }
