@@ -1,21 +1,19 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime
-import os
 
 from models.cart import Cart, CartItem, CartItemAdd, CartItemUpdate
 
 router = APIRouter(prefix="/api/cart", tags=["cart"])
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Database will be injected via dependency
+async def get_database():
+    from server import db
+    return db
 
 
 @router.get("/{session_id}", response_model=Cart)
-async def get_cart(session_id: str):
+async def get_cart(session_id: str, db = Depends(get_database)):
     """Get cart items for session"""
     try:
         cart = await db.carts.find_one({"sessionId": session_id})
@@ -32,7 +30,7 @@ async def get_cart(session_id: str):
 
 
 @router.post("/{session_id}/items")
-async def add_item_to_cart(session_id: str, item_data: CartItemAdd):
+async def add_item_to_cart(session_id: str, item_data: CartItemAdd, db = Depends(get_database)):
     """Add item to cart"""
     try:
         # Get product details
@@ -95,7 +93,7 @@ async def add_item_to_cart(session_id: str, item_data: CartItemAdd):
 
 
 @router.put("/{session_id}/items/{product_id}")
-async def update_cart_item(session_id: str, product_id: str, item_data: CartItemUpdate):
+async def update_cart_item(session_id: str, product_id: str, item_data: CartItemUpdate, db = Depends(get_database)):
     """Update item quantity in cart"""
     try:
         cart = await db.carts.find_one({"sessionId": session_id})
@@ -140,7 +138,7 @@ async def update_cart_item(session_id: str, product_id: str, item_data: CartItem
 
 
 @router.delete("/{session_id}/items/{product_id}")
-async def remove_cart_item(session_id: str, product_id: str):
+async def remove_cart_item(session_id: str, product_id: str, db = Depends(get_database)):
     """Remove item from cart"""
     try:
         cart = await db.carts.find_one({"sessionId": session_id})
@@ -175,7 +173,7 @@ async def remove_cart_item(session_id: str, product_id: str):
 
 
 @router.delete("/{session_id}")
-async def clear_cart(session_id: str):
+async def clear_cart(session_id: str, db = Depends(get_database)):
     """Clear all items from cart"""
     try:
         result = await db.carts.update_one(
