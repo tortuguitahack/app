@@ -57,6 +57,8 @@ app.include_router(api_router)
 app.include_router(products_router)
 app.include_router(categories_router)
 app.include_router(cart_router)
+app.include_router(auth_router)
+app.include_router(payment_router)
 
 app.add_middleware(
     CORSMiddleware,
