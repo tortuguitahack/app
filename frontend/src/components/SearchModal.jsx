@@ -1,26 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, Filter, Star } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 
 export const SearchModal = ({ isOpen, onClose, products, onAddToCart }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState('all');
+
+  const filters = [
+    { id: 'all', name: 'Todos', count: products.length },
+    { id: 'whiskey', name: 'Whiskey', count: products.filter(p => p.category === 'whiskey').length },
+    { id: 'wine', name: 'Vino', count: products.filter(p => p.category === 'wine').length },
+    { id: 'champagne', name: 'Champán', count: products.filter(p => p.category === 'champagne').length },
+    { id: 'featured', name: 'Destacados', count: products.filter(p => p.featured).length }
+  ];
 
   useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredProducts([]);
-      return;
+    if (!isOpen) return;
+
+    let filtered = products;
+
+    // Apply category filter
+    if (selectedFilter !== 'all') {
+      if (selectedFilter === 'featured') {
+        filtered = filtered.filter(product => product.featured);
+      } else {
+        filtered = filtered.filter(product => product.category === selectedFilter);
+      }
     }
 
-    const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Apply search filter
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        product.brand.toLowerCase().includes(query) ||
+        product.category.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query)
+      );
+    }
 
     setFilteredProducts(filtered);
-  }, [searchQuery, products]);
+  }, [searchQuery, selectedFilter, products, isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -28,6 +49,7 @@ export const SearchModal = ({ isOpen, onClose, products, onAddToCart }) => {
     } else {
       document.body.style.overflow = 'unset';
       setSearchQuery('');
+      setSelectedFilter('all');
       setFilteredProducts([]);
     }
 
@@ -45,19 +67,23 @@ export const SearchModal = ({ isOpen, onClose, products, onAddToCart }) => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.8)',
+      background: 'rgba(0, 0, 0, 0.95)',
       zIndex: 1000,
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      backdropFilter: 'blur(10px)'
     }}>
       {/* Search Header */}
       <div style={{
-        background: 'var(--bg-primary)',
+        background: 'var(--gradient-card)',
         padding: '24px',
-        borderBottom: '1px solid var(--border-light)'
+        borderBottom: '2px solid var(--gold-primary)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 101
       }}>
         <div className="container">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
             <div style={{ position: 'relative', flex: 1 }}>
               <Search 
                 size={20} 
@@ -66,38 +92,79 @@ export const SearchModal = ({ isOpen, onClose, products, onAddToCart }) => {
                   left: '16px',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'var(--text-light)'
+                  color: 'var(--gold-primary)'
                 }}
               />
               <input
                 type="text"
-                placeholder="Search for whiskey, wine, champagne..."
+                placeholder="Buscar whiskey, vino, champán, marcas..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
                 style={{
                   width: '100%',
                   padding: '16px 16px 16px 48px',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '0px',
-                  background: 'var(--bg-primary)',
+                  border: '2px solid var(--border-subtle)',
+                  borderRadius: '8px',
+                  background: 'var(--bg-subtle)',
                   fontSize: '16px',
-                  color: 'var(--text-primary)'
+                  color: 'var(--text-primary)',
+                  fontFamily: 'Inter, sans-serif'
                 }}
               />
             </div>
             <button
               onClick={onClose}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '8px',
-                cursor: 'pointer',
-                color: 'var(--text-primary)'
+              className="nav-icon-btn"
+              style={{ 
+                background: 'var(--bg-subtle)',
+                border: '2px solid var(--border-subtle)',
+                borderRadius: '8px',
+                padding: '12px'
               }}
             >
               <X size={24} />
             </button>
+          </div>
+
+          {/* Filter Tabs */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {filters.map((filter) => (
+              <button
+                key={filter.id}
+                onClick={() => setSelectedFilter(filter.id)}
+                style={{
+                  background: selectedFilter === filter.id ? 'var(--gold-primary)' : 'var(--bg-subtle)',
+                  color: selectedFilter === filter.id ? 'var(--bg-primary)' : 'var(--text-primary)',
+                  border: selectedFilter === filter.id ? 'none' : '1px solid var(--border-subtle)',
+                  borderRadius: '20px',
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                {filter.id === 'featured' && <Star size={14} />}
+                {filter.id !== 'all' && filter.id !== 'featured' && <Filter size={14} />}
+                {filter.name}
+                <span style={{
+                  background: selectedFilter === filter.id ? 'rgba(0,0,0,0.2)' : 'var(--gold-primary)',
+                  color: selectedFilter === filter.id ? 'var(--bg-primary)' : 'var(--bg-primary)',
+                  borderRadius: '10px',
+                  padding: '2px 6px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  minWidth: '20px',
+                  textAlign: 'center'
+                }}>
+                  {filter.count}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -110,31 +177,72 @@ export const SearchModal = ({ isOpen, onClose, products, onAddToCart }) => {
         padding: '40px 0'
       }}>
         <div className="container">
-          {searchQuery.trim() === '' ? (
-            <div style={{ textAlign: 'center', paddingTop: '80px' }}>
-              <h3 className="heading-2" style={{ marginBottom: '16px' }}>
-                Search Our Premium Collection
+          {searchQuery.trim() === '' && selectedFilter === 'all' ? (
+            <div style={{ textAlign: 'center', paddingTop: '100px' }}>
+              <div style={{
+                width: '80px',
+                height: '80px',
+                background: 'var(--gradient-gold)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px auto'
+              }}>
+                <Search size={32} color="var(--bg-primary)" />
+              </div>
+              
+              <h3 className="heading-2" style={{ 
+                marginBottom: '16px',
+                color: 'var(--gold-primary)'
+              }}>
+                Busca en Nuestra Colección Premium
               </h3>
-              <p className="body-large" style={{ color: 'var(--text-secondary)' }}>
-                Find your perfect spirit by name, brand, or category
+              <p className="body-large" style={{ color: 'var(--text-muted)' }}>
+                Encuentra tu licor perfecto por nombre, marca, categoría o descripción
               </p>
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div style={{ textAlign: 'center', paddingTop: '80px' }}>
-              <h3 className="heading-2" style={{ marginBottom: '16px' }}>
-                No Results Found
+            <div style={{ textAlign: 'center', paddingTop: '100px' }}>
+              <h3 className="heading-2" style={{ 
+                marginBottom: '16px',
+                color: 'var(--text-muted)'
+              }}>
+                No se encontraron resultados
               </h3>
-              <p className="body-large" style={{ color: 'var(--text-secondary)' }}>
-                Try searching with different keywords
+              <p className="body-large" style={{ color: 'var(--text-muted)' }}>
+                Intenta con diferentes palabras clave o filtros
               </p>
+              
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedFilter('all');
+                }}
+                className="btn-secondary"
+                style={{ marginTop: '24px' }}
+              >
+                Limpiar Búsqueda
+              </button>
             </div>
           ) : (
             <>
               <div style={{ marginBottom: '32px' }}>
-                <h3 className="heading-2">
-                  Found {filteredProducts.length} result{filteredProducts.length !== 1 ? 's' : ''}
+                <h3 className="heading-2" style={{ color: 'var(--gold-primary)' }}>
+                  {filteredProducts.length} resultado{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
                 </h3>
+                
+                {searchQuery && (
+                  <p className="body-regular" style={{ 
+                    color: 'var(--text-muted)',
+                    marginTop: '8px'
+                  }}>
+                    para "{searchQuery}"
+                    {selectedFilter !== 'all' && ` en ${filters.find(f => f.id === selectedFilter)?.name}`}
+                  </p>
+                )}
               </div>
+              
               <div className="grid-product-showcase">
                 {filteredProducts.map((product) => (
                   <ProductCard 
